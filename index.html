@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#063f36" />
+    <title>Финансовая модель</title>
+    <link rel="icon" href="data:," />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#dashboard" aria-label="К дашборду">
+          <span class="brand-mark" aria-hidden="true">Ф</span>
+          <span class="brand-copy"><strong>Финансовая модель</strong><small>инвестиционный проект</small></span>
+        </a>
+        <nav class="main-nav" aria-label="Основная навигация">
+          <button class="nav-link is-active" data-page="dashboard">Дашборд</button>
+          <button class="nav-link" data-page="reports">Отчёты</button>
+          <button class="nav-link" data-page="scenarios">Сценарии</button>
+          <button class="nav-link" data-page="sensitivity">Чувствительность</button>
+          <button class="nav-link" data-page="analytical-note">Аналитическая записка</button>
+        </nav>
+        <label class="mobile-nav-control" for="mobile-page-nav">
+          <span>Раздел</span>
+          <select id="mobile-page-nav" aria-label="Выбрать страницу">
+            <option value="dashboard">Дашборд</option>
+            <option value="reports">Отчёты</option>
+            <option value="scenarios">Сценарии</option>
+            <option value="sensitivity">Чувствительность</option>
+            <option value="analytical-note">Аналитическая записка</option>
+          </select>
+        </label>
+        <div class="topbar-meta"><span class="source-dot"></span><span>Источник: Excel-модель</span></div>
+      </header>
+
+      <main>
+        <section class="page-view is-active" id="dashboard-page" aria-labelledby="dashboard-title">
+          <div class="page-heading">
+            <div>
+              <p class="eyebrow"><span class="eyebrow-line"></span> финансовая аналитика</p>
+              <h1 id="dashboard-title">Дашборд</h1>
+              <p class="page-subtitle">Ключевые показатели, движение денежных средств и окупаемость проекта.</p>
+            </div>
+            <div class="period-control">
+              <label for="selected-period">Режим KPI</label>
+              <select id="selected-period" aria-label="Период ключевых показателей"></select>
+            </div>
+          </div>
+
+          <div class="dashboard-layout">
+            <div class="dashboard-main">
+              <div class="section-heading compact-heading">
+                <div><span class="section-kicker">01 / показатели</span><h2>Ключевые метрики</h2></div>
+                <span class="live-badge"><span></span> Пересчёт в реальном времени</span>
+              </div>
+              <div class="kpi-grid" id="kpi-grid"></div>
+
+              <div class="charts-section">
+                <div class="section-heading">
+                  <div><span class="section-kicker">02 / динамика</span><h2>Финансовые графики</h2></div>
+                  <span class="section-note" id="chart-period-note"></span>
+                </div>
+                <div class="chart-grid">
+                  <article class="chart-card chart-card-wide">
+                    <div class="chart-heading"><div><h3>P&amp;L по месяцам</h3><p>Выручка, EBITDA и чистая прибыль</p></div><span class="chart-index">01</span></div>
+                    <div class="legend" id="pnl-legend"></div>
+                    <div class="chart-wrap" id="pnl-chart"></div>
+                  </article>
+                  <article class="chart-card">
+                    <div class="chart-heading"><div><h3>Накопленный денежный поток</h3><p>С учётом инвестиций первого месяца</p></div><span class="chart-index">02</span></div>
+                    <div class="legend"><span><i class="legend-line legend-cash"></i> Накопленный поток</span></div>
+                    <div class="chart-wrap" id="cash-chart"></div>
+                  </article>
+                  <article class="chart-card">
+                    <div class="chart-heading"><div><h3>Окупаемость инвестиций</h3><p>Переход накопленного потока выше нуля</p></div><span class="chart-index">03</span></div>
+                    <div class="legend"><span><i class="legend-box legend-payback"></i> Накопленный поток</span><span><i class="legend-dash"></i> Нулевая линия</span></div>
+                    <div class="chart-wrap" id="payback-chart"></div>
+                    <div class="chart-caption" id="payback-caption"></div>
+                  </article>
+                </div>
+              </div>
+            </div>
+
+            <aside class="parameter-panel" aria-labelledby="parameters-title">
+              <div class="panel-topline"><span class="section-kicker">настройки</span><span class="edit-mark" aria-hidden="true">✦</span></div>
+              <div class="panel-title-row"><div><h2 id="parameters-title">Параметры модели</h2><p>Изменения сразу отражаются в расчётах</p></div></div>
+              <div class="google-sync-control"><button class="google-sync-button" id="sync-google-sheets" type="button">Обновить из Google Таблиц</button><span id="google-sync-status" role="status" aria-live="polite">Источник Excel · синхронизация не запускалась</span></div>
+              <div class="parameter-group-label">Период планирования</div>
+              <div class="parameter-list">
+                <label class="parameter-field" for="start-date"><span class="parameter-name">Дата старта <button class="hint-button" type="button" aria-label="Подсказка: дата старта" data-hint="Дата начала временной шкалы исходной Excel-модели. Все периоды рассчитываются с этого месяца.">i</button></span><span class="input-shell"><input id="start-date" type="date" value="2025-09-04" /><span class="unit">дата</span></span></label>
+                <label class="parameter-field" for="horizon"><span class="parameter-name">Горизонт планирования <button class="hint-button" type="button" aria-label="Подсказка: горизонт" data-hint="Число месяцев модели. В Excel рассчитано 24 месячных столбца (C:Z), поэтому здесь доступен горизонт от 1 до 24 месяцев.">i</button></span><span class="input-shell"><input id="horizon" type="number" min="1" max="24" step="1" value="24" /><span class="unit">мес.</span></span></label>
+              </div>
+              <div class="parameter-group-label">Выручка и продажи</div>
+              <div class="parameter-list">
+                <label class="parameter-field" for="traffic"><span class="parameter-name">Трафик <button class="hint-button" type="button" aria-label="Подсказка: трафик" data-hint="F2 листа «Параметры». Умножается на часы работы в день и рабочие дни. Производственная мощность F8 в исходных формулах не ограничивает выручку.">i</button></span><span class="input-shell"><input id="traffic" type="number" min="0" step="1" value="500" /><span class="unit">чел./час</span></span></label>
+                <label class="parameter-field" for="conversion"><span class="parameter-name">Конверсия в покупку <button class="hint-button" type="button" aria-label="Подсказка: конверсия" data-hint="F3 листа «Параметры». Доля посетителей, совершающих покупку. Участвует в расчёте выручки напрямую.">i</button></span><span class="input-shell"><input id="conversion" type="number" min="0" max="100" step="0.1" value="25" /><span class="unit">%</span></span></label>
+                <label class="parameter-field" for="basket"><span class="parameter-name">Средний чек <button class="hint-button" type="button" aria-label="Подсказка: средний чек" data-hint="F4 листа «Параметры». Умножается на количество покупок в формуле выручки.">i</button></span><span class="input-shell"><input id="basket" type="number" min="0" step="1" value="250" /><span class="unit">₽</span></span></label>
+                <label class="parameter-field" for="hours"><span class="parameter-name">Часы работы в день <button class="hint-button" type="button" aria-label="Подсказка: часы работы" data-hint="F12 листа «Параметры». Используется в формуле выручки каждого месяца.">i</button></span><span class="input-shell"><input id="hours" type="number" min="0" step="0.5" value="12" /><span class="unit">часов</span></span></label>
+                <label class="parameter-field" for="days"><span class="parameter-name">Рабочих дней в месяце <button class="hint-button" type="button" aria-label="Подсказка: рабочие дни" data-hint="F13 листа «Параметры». Используется как постоянное число дней для каждого месяца; календарная длина месяца на формулу не влияет.">i</button></span><span class="input-shell"><input id="days" type="number" min="0" max="31" step="1" value="26" /><span class="unit">дней</span></span></label>
+              </div>
+              <div class="parameter-group-label">Себестоимость</div>
+              <div class="parameter-list">
+                <label class="parameter-field" for="cogs"><span class="parameter-name">Себестоимость сырья <button class="hint-button" type="button" aria-label="Подсказка: себестоимость сырья" data-hint="F15 листа «Параметры». Умножается на выручку в строке 27. Другие строки себестоимости в Excel заданы отдельными фиксированными долями выручки.">i</button></span><span class="input-shell"><input id="cogs" type="number" min="0" max="100" step="0.1" value="35" /><span class="unit">% выручки</span></span></label>
+              </div>
+              <div class="parameter-group-label">Операционные расходы</div>
+              <div class="parameter-list">
+                <label class="parameter-field" for="marketing"><span class="parameter-name">Маркетинг <button class="hint-button" type="button" aria-label="Подсказка: маркетинг" data-hint="F25 листа «Параметры». Несмотря на пометку «от выручки», исходная модель переносит значение напрямую как фиксированную сумму в рублях за месяц.">i</button></span><span class="input-shell"><input id="marketing" type="number" min="0" step="0.1" value="0.5" /><span class="unit">₽/месяц</span></span></label>
+              </div>
+              <div class="parameter-group-label">Другие исходные параметры модели</div>
+              <p class="parameter-note">Стоимость оборудования, ФОТ, аренда и налоги зафиксированы в исходной модели. <button class="hint-button parameter-info" type="button" aria-label="Какие параметры Excel пока не влияют на результат" data-hint="Согласно формулам исходного Excel, значения мощности (F8), упаковки (F16), санитарии (F17), логистики (F18), эквайринга (F24), ремонта (F26), санитарного контроля (F27), страхования (F28) и уборки/ТБО (F30) не участвуют в расчётных строках модели. Не создаём для них новые формулы. Строки затрат 28–30 считаются по фиксированным долям выручки из самих формул Excel. Подробности — в примечаниях страницы «Отчёты». ">i</button></p>
+              <div class="channel-check" id="channel-check"></div>
+              <div class="panel-actions"><button class="reset-button" id="reset-parameters" type="button"><span aria-hidden="true">↺</span> Сбросить к Excel</button><span class="source-cell-note">Голубые ячейки · Excel B4:B5, C10:C16</span></div>
+            </aside>
+          </div>
+
+          <section class="dashboard-expense-section" aria-labelledby="expense-structure-title">
+            <div class="section-heading expense-structure-heading"><div><span class="section-kicker">03 / состав расходов</span><h2 id="expense-structure-title">Структура расходов<button class="hint-button" type="button" aria-label="Как рассчитывается структура расходов" data-hint="Диаграмма суммирует самостоятельные расходные строки ОПиУ за выбранный месяц или весь горизонт. Итоговые строки и инвестиции не включаются повторно.">i</button></h2><p>Фактические статьи расходов по ОПиУ</p></div><label class="expense-period-control" for="expense-period"><span>Период</span><select id="expense-period"><option value="total" selected>Весь горизонт</option></select></label></div>
+            <article class="chart-card expense-structure-card">
+              <div class="expense-structure-layout">
+                <div id="expense-donut" class="expense-donut-wrap"></div>
+                <div class="expense-legend-wrap"><div id="expense-legend" class="expense-legend"></div><p id="expense-largest" class="expense-largest" aria-live="polite"></p></div>
+              </div>
+            </article>
+          </section>
+          <footer class="page-footer"><span>Расчёты повторяют формулы исходного Excel-файла.</span><span id="footer-period"></span></footer>
+        </section>
+
+        <section class="page-view" id="reports-page" aria-labelledby="reports-title">
+          <div class="page-heading reports-heading">
+            <div><p class="eyebrow"><span class="eyebrow-line"></span> финансовая отчётность</p><h1 id="reports-title">Отчёты</h1><p class="page-subtitle">Помесячная детализация расчётов исходной финансовой модели.</p></div>
+            <div class="report-meta"><span class="report-meta-label">Период модели</span><strong id="report-range"></strong><span>изменяется автоматически с параметрами</span></div>
+          </div>
+          <div class="report-summary" id="report-summary"></div>
+          <article class="report-card">
+            <div class="report-card-heading"><div><span class="section-kicker">Блок 2 · Финансовый результат</span><h2>Отчёт о прибылях и убытках</h2><p>ОПиУ · сумма в рублях, рентабельность в процентах</p></div><span class="report-number">02</span></div>
+            <div class="table-scroll" id="pnl-table"></div>
+          </article>
+          <article class="report-card">
+            <div class="report-card-heading"><div><span class="section-kicker">Блок 3 · Ликвидность</span><h2>Отчёт о движении денежных средств</h2><p>ДДС · накопленный поток включает CAPEX первого месяца</p></div><span class="report-number">03</span></div>
+            <div class="table-scroll" id="cash-table"></div>
+          </article>
+          <div class="report-footnote"><span class="footnote-icon">i</span><p><strong>Методологическое примечание.</strong> Таблицы повторяют формулы Excel. Подсветка значений не меняет знаки и порядок строк исходной модели; особенности расчёта затрат и денежных потоков описаны в документации проекта.</p></div>
+          <footer class="page-footer"><span>Источник формул и методологии: Excel-модель проекта.</span><span>Сравнение вариантов доступно на странице «Сценарии».</span></footer>
+        </section>
+
+        <section class="page-view" id="scenarios-page" aria-labelledby="scenarios-title">
+          <div class="page-heading reports-heading">
+            <div><p class="eyebrow"><span class="eyebrow-line"></span> сравнение вариантов</p><h1 id="scenarios-title">Сценарии</h1><p class="page-subtitle">Сравните финансовый результат трёх вариантов развития бизнеса.</p></div>
+            <div class="report-meta"><span class="report-meta-label">Период расчёта</span><strong id="scenario-horizon-label">24 месяца</strong><span>для всех вариантов одинаковый</span></div>
+          </div>
+
+          <div class="section-heading scenario-section-heading"><div><span class="section-kicker">01 / параметры</span><h2>Параметры сценариев</h2></div><div class="scenario-toolbar"><span class="section-note">Демонстрационные значения · не прогноз</span><button class="reset-button scenario-reset-all" id="reset-all-scenarios" type="button">Вернуть демонстрационные сценарии</button></div></div>
+          <div class="scenario-controls" id="scenario-controls"></div>
+
+          <div class="section-heading scenario-section-heading"><div><span class="section-kicker">02 / результаты</span><h2>Сравнительная таблица</h2></div><span class="section-note">Обновляется при изменении параметров</span></div>
+          <div id="scenario-comparison" class="scenario-comparison"></div>
+
+          <article class="chart-card scenario-summary-card" aria-labelledby="scenario-summary-title">
+            <div class="chart-heading"><div><span class="section-kicker">03 / итог за 24 месяца</span><h2 id="scenario-summary-title">Сравнение сценариев</h2><p>Выручка, EBITDA, чистая прибыль и NPV · значения за весь горизонт</p></div></div>
+            <div class="legend scenario-summary-legend" id="scenario-summary-legend"></div>
+            <div class="chart-wrap scenario-summary-chart-wrap" id="scenario-summary-chart"></div>
+          </article>
+
+          <div class="charts-section scenario-charts">
+            <div class="section-heading"><div><span class="section-kicker">04 / динамика</span><h2>Помесячные графики</h2></div><span class="section-note">Графики обновляются вместе с расчётом</span></div>
+            <div class="scenario-chart-grid">
+              <article class="chart-card"><div class="chart-heading"><div><h3>Выручка по месяцам</h3><p>Суммы в рублях по каждому сценарию</p></div></div><div class="legend scenario-legend"></div><div class="chart-wrap" id="scenario-revenue-chart"></div></article>
+              <article class="chart-card"><div class="chart-heading"><div><h3>EBITDA по месяцам</h3><p>Прибыль до амортизации и налогов</p></div></div><div class="legend scenario-legend"></div><div class="chart-wrap" id="scenario-ebitda-chart"></div></article>
+              <article class="chart-card"><div class="chart-heading"><div><h3>Чистая прибыль по месяцам</h3><p>После расходов, амортизации и налогов</p></div></div><div class="legend scenario-legend"></div><div class="chart-wrap" id="scenario-profit-chart"></div></article>
+              <article class="chart-card chart-card-wide"><div class="chart-heading"><div><h3>Накопленный денежный поток</h3><p>Показывает, как меняется остаток денег проекта</p></div></div><div class="legend scenario-legend"></div><div class="chart-wrap" id="scenario-cash-chart"></div></article>
+              <article class="chart-card chart-card-wide"><div class="chart-heading"><div><h3>Итоговые показатели</h3><p>Сравнение за весь период</p></div></div><div class="scenario-metric-chart-grid"><section><h4>NPV</h4><div id="scenario-npv-bars"></div></section><section><h4>Срок окупаемости</h4><div id="scenario-payback-bars"></div></section><section><h4>Потребность в инвестициях</h4><div id="scenario-investment-bars"></div></section></div></article>
+            </div>
+          </div>
+          <footer class="page-footer"><span>Формулы основной модели не изменены.</span><span>Сценарные параметры действуют независимо друг от друга.</span></footer>
+        </section>
+
+        <section class="page-view" id="sensitivity-page" aria-labelledby="sensitivity-title">
+          <div class="page-heading reports-heading">
+            <div><p class="eyebrow"><span class="eyebrow-line"></span> финансовая аналитика</p><h1 id="sensitivity-title">Чувствительность</h1><p class="page-subtitle">Оцените, как изменения исходных параметров влияют на чистую прибыль.</p></div>
+          </div>
+
+          <section class="sensitivity-settings" aria-label="Настройки анализа">
+            <label class="sensitivity-field" for="sensitivity-period"><span>Период анализа<button class="hint-button" type="button" aria-label="Подсказка: период анализа" data-hint="Чистая прибыль берётся из строки 46 ОПиУ: за месяц, в среднем за месяц или суммой за весь горизонт.">i</button></span><select id="sensitivity-period"><option value="average">В среднем за месяц</option><option value="total">За весь горизонт</option></select></label>
+            <label class="sensitivity-field" for="sensitivity-range"><span>Диапазон отклонения<button class="hint-button" type="button" aria-label="Подсказка: диапазон отклонения" data-hint="Каждый выбранный параметр по очереди меняется относительно текущего значения. Остальные исходные параметры остаются прежними.">i</button></span><select id="sensitivity-range"><option value="0.1">±10%</option><option value="0.2" selected>±20%</option><option value="0.3">±30%</option></select></label>
+            <div class="sensitivity-baseline" aria-live="polite"><span>Базовая чистая прибыль</span><strong id="sensitivity-baseline">—</strong><small id="sensitivity-period-label"></small></div>
+          </section>
+
+          <article class="chart-card sensitivity-tornado-card" aria-labelledby="sensitivity-tornado-title">
+            <div class="chart-heading"><div><span class="section-kicker">01 / влияние параметров</span><h2 id="sensitivity-tornado-title">Торнадо-диаграмма<button class="hint-button" type="button" aria-label="Как читать торнадо-диаграмму" data-hint="Каждая строка показывает изменение чистой прибыли при снижении и повышении одного параметра. Чем длиннее диапазон, тем сильнее его влияние.">i</button></h2><p>Изменение относительно базовой чистой прибыли</p></div><span class="chart-index">Δ ₽</span></div>
+            <div class="sensitivity-legend"><span><i class="sensitivity-swatch is-negative"></i>Снижение прибыли</span><span><i class="sensitivity-swatch is-positive"></i>Рост прибыли</span><small class="sensitivity-legend-note">Красный — снижение чистой прибыли, зелёный — увеличение чистой прибыли. Знак изменения самого параметра может отличаться от направления изменения прибыли</small></div>
+            <div class="sensitivity-chart-scroll"><div id="sensitivity-tornado" class="sensitivity-tornado"></div></div>
+          </article>
+
+          <article class="chart-card sensitivity-matrix-card" aria-labelledby="sensitivity-matrix-title">
+            <div class="chart-heading"><div><span class="section-kicker">02 / совместное влияние</span><h2 id="sensitivity-matrix-title">Матрица What-if<button class="hint-button" type="button" aria-label="Что показывает матрица What-if" data-hint="Каждая ячейка показывает чистую прибыль при одновременном изменении двух выбранных параметров. Наведите указатель или перейдите к ячейке клавиатурой для деталей.">i</button></h2><p>Сумма чистой прибыли при совместном изменении двух параметров</p></div><span class="chart-index">5 × 5</span></div>
+            <div class="sensitivity-matrix-controls">
+              <label class="sensitivity-field" for="sensitivity-row-parameter"><span>Параметр строк</span><select id="sensitivity-row-parameter"></select></label>
+              <label class="sensitivity-field" for="sensitivity-column-parameter"><span>Параметр столбцов</span><select id="sensitivity-column-parameter"></select></label>
+            </div>
+            <div class="sensitivity-legend"><span><i class="sensitivity-swatch is-profitable"></i>Чистая прибыль выше нуля</span><span><i class="sensitivity-swatch is-loss"></i>Чистая прибыль ниже нуля</span><span><i class="sensitivity-swatch is-zero"></i>Нулевой результат</span><span><i class="sensitivity-swatch is-base"></i>Базовый вариант</span></div>
+            <div class="matrix-view-switch" role="group" aria-label="Режим отображения матрицы What-if"><button type="button" id="matrix-view-table" aria-pressed="true">Таблица</button><button type="button" id="matrix-view-heatmap" aria-pressed="false">Тепловая карта</button></div>
+            <div class="sensitivity-matrix-scroll matrix-view-panel" id="sensitivity-matrix-table-view"><div id="sensitivity-matrix"></div></div>
+            <div class="sensitivity-matrix-scroll matrix-view-panel" id="sensitivity-heatmap-view" hidden></div>
+            <div id="sensitivity-best-combination" class="sensitivity-best-combination" aria-live="polite"></div>
+          </article>
+
+          <section class="sensitivity-insights" aria-labelledby="sensitivity-insights-title">
+            <div class="section-heading"><div><span class="section-kicker">03 / итоги</span><h2 id="sensitivity-insights-title">Краткие выводы</h2></div><span class="section-note">По выбранному периоду и диапазону</span></div>
+            <div id="sensitivity-insights" class="sensitivity-insight-grid" aria-live="polite"></div>
+          </section>
+          <footer class="page-footer"><span>Варианты рассчитываются отдельно и не меняют параметры модели.</span><span>Источник расчётов: строка 46 ОПиУ.</span></footer>
+        </section>
+
+        <section class="page-view analytical-note-page" id="analytical-note-page" aria-labelledby="analytical-note-title">
+          <div class="page-heading reports-heading analytical-note-heading">
+            <div><p class="eyebrow"><span class="eyebrow-line"></span> выводы для собственника</p><h1 id="analytical-note-title">Аналитическая записка</h1><p class="page-subtitle">Финансовые результаты, сценарные варианты и приоритеты для проверки.</p></div>
+          </div>
+          <p class="analytical-auto-note">Записка сформирована автоматически по текущим расчётным данным модели.</p>
+
+          <section class="analytical-block" aria-labelledby="analytical-summary-title">
+            <div class="section-heading"><div><span class="section-kicker">01 / ключевые показатели</span><h2 id="analytical-summary-title">Финансовое резюме</h2></div><span class="section-note">ОПиУ — среднемесячно · инвестиционные показатели — весь горизонт</span></div>
+            <div id="analytical-primary-kpis" class="analytical-primary-grid"></div>
+            <div id="analytical-secondary-kpis" class="analytical-secondary-grid"></div>
+          </section>
+
+          <section class="analytical-block" aria-labelledby="analytical-scenarios-title">
+            <div class="section-heading"><div><span class="section-kicker">02 / прогноз прибыли</span><h2 id="analytical-scenarios-title">Сценарные варианты</h2></div><button class="analytical-nav-button" type="button" data-note-nav="scenarios">Настроить сценарии <span aria-hidden="true">→</span></button></div>
+            <p id="analytical-scenarios-lead" class="analytical-block-lead"></p>
+            <div id="analytical-scenario-cards" class="analytical-scenario-grid"></div>
+            <details class="analytical-details"><summary>Подробное сравнение</summary><div id="analytical-scenario-table" class="analytical-table-wrap"></div></details>
+          </section>
+
+          <section class="analytical-block" aria-labelledby="analytical-cash-title">
+            <div class="section-heading"><div><span class="section-kicker">03 / денежный поток</span><h2 id="analytical-cash-title">Накопленный денежный поток</h2></div><span class="section-note">Помесячно · весь горизонт</span></div>
+            <article class="chart-card analytical-cash-card"><div id="analytical-cash-chart" class="analytical-cash-chart"></div><p id="analytical-cash-conclusion" class="analytical-chart-conclusion"></p></article>
+            <details class="analytical-details"><summary>Ограничение расчёта окупаемости</summary><p id="analytical-payback-caveat"></p></details>
+          </section>
+
+          <section class="analytical-block" aria-labelledby="analytical-factors-title">
+            <div class="section-heading"><div><span class="section-kicker">04 / чувствительность</span><h2 id="analytical-factors-title">Ключевые факторы влияния</h2></div><button class="analytical-nav-button" type="button" data-note-nav="sensitivity">Открыть анализ <span aria-hidden="true">→</span></button></div>
+            <p id="analytical-factors-lead" class="analytical-block-lead"></p>
+            <div id="analytical-factor-chart" class="analytical-factor-list"></div>
+            <p id="analytical-matrix-context" class="analytical-chart-conclusion"></p>
+          </section>
+
+          <section class="analytical-block" aria-labelledby="analytical-actions-title">
+            <div class="section-heading"><div><span class="section-kicker">05 / план действий</span><h2 id="analytical-actions-title">Рекомендации и план действий</h2></div></div>
+            <p class="analytical-block-lead">Расчётный эффект показан для конкретного изменения параметра; он не является гарантией результата. Усилия — предварительная экспертная оценка.</p>
+            <div id="analytical-actions" class="analytical-action-grid"></div>
+          </section>
+
+          <section class="analytical-block" aria-labelledby="analytical-risks-title">
+            <div class="section-heading"><div><span class="section-kicker">06 / риски модели</span><h2 id="analytical-risks-title">Карта рисков</h2></div></div>
+            <p class="analytical-block-lead">Величина возможного снижения прибыли при указанном отклонении. Вероятности риска модель не рассчитывает.</p>
+            <div id="analytical-risk-list" class="analytical-risk-list"></div>
+          </section>
+
+          <section class="analytical-block analytical-conclusion-block" aria-labelledby="analytical-conclusion-title">
+            <div class="section-heading"><div><span class="section-kicker">07 / итог</span><h2 id="analytical-conclusion-title">Заключение</h2></div></div>
+            <div id="analytical-conclusion" class="analytical-conclusion"></div>
+          </section>
+          <footer class="page-footer"><span>Показатели повторяют расчёты финансовой модели.</span><span>Подробности — в Отчётах, Сценариях и Чувствительности.</span></footer>
+        </section>
+      </main>
+      <dialog class="google-sync-dialog" id="google-sync-dialog" aria-labelledby="google-sync-dialog-title">
+        <div class="google-sync-dialog-content">
+          <div class="google-sync-dialog-heading"><div><span class="section-kicker">проверка данных</span><h2 id="google-sync-dialog-title">Подтвердите обновление</h2></div><button class="google-sync-close" id="google-sync-close" type="button" aria-label="Закрыть">×</button></div>
+          <p class="google-sync-intro">Проверьте изменения перед применением. Текущие значения приложения показаны слева.</p>
+          <ul class="google-sync-change-list" id="google-sync-change-list"></ul>
+          <div class="google-sync-preserve-note" id="google-sync-preserve-note"></div>
+          <div class="google-sync-dialog-actions"><button class="reset-button" id="google-sync-cancel" type="button">Отмена</button><button class="google-sync-apply" id="google-sync-apply" type="button">Применить подтверждённые значения</button></div>
+        </div>
+      </dialog>
+      <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    </div>
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
